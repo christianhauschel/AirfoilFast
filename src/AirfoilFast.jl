@@ -183,14 +183,11 @@ function Base.length(af::Airfoil)
 end
 
 function Base.show(io::IO, af::Airfoil)
-    println(io, "────────────────────────────────────────────────────────────────────────────────")
-    println(io, f" Airfoil           {af.name}")
-    println(io, f"────────────────────────────────────────────────────────────────────────────────")
+    println(io, f"──── Airfoil {af.name} ────")
     println(io, f" n                {length(af):9d}")
     println(io, f" chord            {chordlength(af):9.2f}")
     println(io, f" thickness_max    {thickness_max(af):9.2e}")
     println(io, f" area             {area(af):9.2e}")
-    println(io, "────────────────────────────────────────────────────────────────────────────────")
 end
 
 """
