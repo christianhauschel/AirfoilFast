@@ -1,0 +1,13 @@
+name = "AirfoilFast"
+uuid = "0d474814-34f0-4bc9-a1af-468ba8a1a60f"
+authors = ["Christian <hacs@zhaw.ch>"]
+version = "0.1.0"
+
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+FLOWMath = "6cb5d3fb-0fe8-4cc2-bd89-9fe0b19a99d3"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+PyFormattedStrings = "5f89f4a4-a228-4886-b223-c468a82ed5b9"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
