@@ -4,8 +4,6 @@ using DelimitedFiles, CSV, DataFrames
 using PyFormattedStrings
 using FLOWMath
 using PyPlot, PyCall
-using BSplineKit
-
 export Airfoil, plot, plot_airfoils, scale!, normalize!, rotate!, rotated!
 export twist, twistd, area, thickness, thickness_max, thickness_TE, data
 export interpolate_airfoils, upper, lower, TE, LE, camberline, camberlength, chordlength
