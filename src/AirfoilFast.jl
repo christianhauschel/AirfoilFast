@@ -4,15 +4,16 @@ using DelimitedFiles, CSV, DataFrames
 using PyFormattedStrings
 using FLOWMath
 using PyPlot, PyCall
+using BSplineKit
 
 export Airfoil, plot, plot_airfoils, scale!, normalize!, rotate!, rotated!
 export twist, twistd, area, thickness, thickness_max, thickness_TE, data
 export interpolate_airfoils, upper, lower, TE, LE, camberline, camberlength, chordlength
 export interpolate_airfoils
+export refine!
+export save
 
 """
-    Airfoil(name)
-
     Airfoil(x, y, name)
 
 Create an airfoil from the coordinates `x` and `y` and the name `name`.
@@ -231,6 +232,43 @@ function data(af::Airfoil)
     return [af.x af.y]
 end
 
+
+# function refine!(af::Airfoil, n::Int; order=2)
+#     l = lower(af)
+#     u = upper(af)
+
+#     # raise error if n is even 
+#     if n % 2 == 0
+#         error("n must be odd!")
+#     end
+
+#     n_half = n ÷ 2
+
+#     # interpolate lower and upper
+#     l_extended = vcat(reshape(u[end,:], 1, 2), l)
+#     x_int_l = _cosspacing(0, 1, n_half + 1)
+#     l_int = akima(l_extended[:, 1], l_extended[:, 2], x_int_l)
+
+#     # interpolate upper
+#     x_int_u = _cosspacing(1, 0, n_half + 1)
+#     u_int = akima(u[:, 1], u[:, 2], x_int_u)
+
+#     # remove first point from l_int 
+#     x_int_l = x_int_l[2:end]
+#     l_int = l_int[2:end, :]
+
+#     # vcat u_int and l_int 
+#     af.x = vcat(u_int[:, 1], l_int[:, 1])
+#     af.y = vcat(u_int[:, 2], l_int[:, 2])
+# end
+
+# function _cosspacing(x_start, x_end, n; m=π, coeff=1)
+#     x = Vector(LinRange(m, 0, n))
+#     cosspacing = cos.(x)
+#     s = ((cosspacing .+ 1) / 2 .- x / π) .* coeff .+ x / π
+#     return s .* (x_end - x_start) .+ x_start
+# end
+
 """
     interpolate(list_af::Vector{Airfoil}, s::Vector, s_int::Vector)
 
@@ -272,10 +310,21 @@ function interpolate_airfoils(list_af::Vector{Airfoil}, s::Vector, s_int::Vector
 end
 
 function _upper_lower_split(af::Airfoil)
-    i_LE = Int(floor(length(af) / 2))
+
+    le = LE(af)
+
+    # find point index of LE 
+    i_LE = 0
+    for i = 1:length(af)
+        if af.x[i] == le[1] && af.y[i] == le[2]
+            i_LE = i
+            break
+        end
+    end
+
     d = data(af)
-    upper = d[1:i_LE+1, :]
-    lower = d[i_LE+2:end, :]
+    upper = d[1:i_LE, :]
+    lower = d[i_LE+1:end, :]
     return upper, lower
 end
 
@@ -457,6 +506,22 @@ function plot_airfoils(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, l
     end
     return fig
 end
+
+function save(af::Airfoil, fname)
+    ext = fname_extension(fname)
+
+    if ext == "dat"
+        f = open(fname, "w")
+        println(f, af.name)
+        for i = 1:length(af)
+            println(f, af.x[i], " ", af.y[i])
+        end
+        close(f)
+    elseif ext == "csv"
+        df = DataFrame(x=af.x, y=af.y, name=af.name)
+        CSV.write(fname, df)
+    end
+end 
 
 
 end
