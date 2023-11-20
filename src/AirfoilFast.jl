@@ -9,7 +9,7 @@ export twist, twistd, area, thickness, thickness_max, thickness_TE, data
 export interpolate_airfoils, upper, lower, TE, LE, camberline, camberlength, chordlength
 export interpolate_airfoils
 export refine!
-export save
+export save, save_dust
 
 """
     Airfoil(x, y, name)
@@ -520,6 +520,15 @@ function save(af::Airfoil, fname)
         CSV.write(fname, df)
     end
 end 
+
+function save_dust(af::Airfoil, fname)
+    f = open(fname, "w")
+    println(f, length(af))
+    for i = 1:length(af)
+        println(f, af.x[i], " ", af.y[i])
+    end
+    close(f)
+end
 
 
 end
