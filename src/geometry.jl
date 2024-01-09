@@ -19,21 +19,20 @@ function _polygon_area(x, y)
 end
 
 
-
 """
     scale(af::Airfoil, new_chord; LE_origin::Vector=true)
 
 Scale an airfoil to a new chord length `new_chord`. If `LE_origin` is true, the
 leading edge is used as origin, otherwise the origin is [0, 0].
 """
-function scale!(af::Airfoil, new_chord; LE_origin::Vector=true)
+function scale!(af::Airfoil, scaling; LE_origin::Bool=true)
     if LE_origin
         le = LE(af)
     else
         le = [0, 0]
     end
-    af.x = (af.x .- le[1]) * new_chord .+ le[1]
-    af.y = (af.y .- le[2]) * new_chord .+ le[2]
+    af.x = (af.x .- le[1]) * scaling .+ le[1]
+    af.y = (af.y .- le[2]) * scaling .+ le[2]
 end
 
 """
