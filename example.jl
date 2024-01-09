@@ -1,19 +1,14 @@
 using AirfoilFast
 
-af = Airfoil("data/NACA4408.dat")
+af1 = Airfoil("data/NACA4408.dat")
+af2 = Airfoil("data/NACA4412.dat")
 
+chordlength(af1)
+camberlength(af1)
 
-plot(af)
-chordlength(af)
-camberlength(af)
+normalize!(af2)
+plot(af2)
 
-af1 = Airfoil("data/NACA4412.dat")
+afs_int = interpolate_airfoils([af1, af2, af2], [0., 0.5, 1.0], Vector(LinRange(0, 1, 4)))
 
-afs_int = interpolate_airfoils([af, af1, af1], [0., 0.5, 1.0], Vector(LinRange(0, 1, 10)))
-
-normalize!(af1)
-save_dust(af1, "test.dat")
-
-plot(af1)
-
-# save.(afs_int, [joinpath("data", af.name * ".dat") for af in afs_int])
+plot(afs_int)

@@ -17,6 +17,6 @@ include("io.jl")
 export save, save_dust
 
 include("plot.jl")
-export plot, plot_airfoils
+export plot
 
 end

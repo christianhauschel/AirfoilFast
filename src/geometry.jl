@@ -303,6 +303,9 @@ end
 
 """
 Calculates the centroid of an airfoil.
+
+# References 
+https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
 """
 function centroid(af::Airfoil)::Vector
     points = data(af)

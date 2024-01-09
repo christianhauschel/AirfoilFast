@@ -57,7 +57,7 @@ end
 
 Plot a list of airfoils.
 """
-function plot_airfoils(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, legend=true)
+function plot(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, legend=true)
     pplt = pyimport("proplot")
 
     width = 0.0
