@@ -13,6 +13,6 @@ afs_int = interpolate_airfoils([af1, af2, af2], [0., 0.5, 1.0], Vector(LinRange(
 
 plot(afs_int)
 
-scale!(af1, 0.5)
+af1_scaled = scale(af1, 0.5)
 
-plot(af1)
+plot(af1_scaled)
