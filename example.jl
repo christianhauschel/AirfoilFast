@@ -7,6 +7,11 @@ chordlength(af1)
 camberlength(af1)
 
 normalize!(af2)
+
+
+
+
+
 plot(af2)
 
 afs_int = interpolate_airfoils([af1, af2, af2], [0., 0.5, 1.0], Vector(LinRange(0, 1, 4)))
