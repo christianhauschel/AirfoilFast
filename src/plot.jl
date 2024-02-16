@@ -1,4 +1,4 @@
-using CairoMakie
+
 
 """
     _figure_sizing(af::Airfoil)
@@ -54,11 +54,7 @@ end
 #     return fig
 # end
 
-"""
-    plot_airfoils(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, legend=true)
 
-Plot a list of airfoils.
-"""
 # function plot(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, legend=true)
 #     pplt = pyimport("proplot")
 
@@ -97,62 +93,72 @@ Plot a list of airfoils.
 
 
 
-function plot(af::Airfoil; fname=nothing, px_per_unit=2, legend=false)
-    f = Figure(size=_figure_sizing(af).*150)
+function plot(airfoil::Airfoil; fname=nothing, px_per_unit=2, legend=false)
+    f = Figure(size=_figure_sizing(airfoil) .* 150)
 
     ax = Axis(
-        f[1, 1], 
-        xlabel="x", 
+        f[1, 1],
+        xlabel="x",
         ylabel="y",
-        title=af.name,
-        subtitle=string(length(af)),
-        aspect = DataAspect(),
+        title=airfoil.name,
+        subtitle=string(length(airfoil)),
+        aspect=DataAspect(),
     )
 
-    xlims!(ax, low=minimum(af.x) - 0.01, high=maximum(af.x) + 0.01)
+    xlims!(ax, low=minimum(airfoil.x) - 0.01, high=maximum(airfoil.x) + 0.01)
 
-    u = upper(af)
-    l = lower(af)
-    c = camberline(af)
+    u = upper(airfoil)
+    l = lower(airfoil)
+    c = camberline(airfoil)
+    center = centroid(airfoil)
 
     lines!(ax, u[:, 1], u[:, 2], linewidth=1, linestyle=:solid, label="upper")
     lines!(ax, l[:, 1], l[:, 2], linewidth=1, linestyle=:solid, label="lower")
     lines!(ax, c[:, 1], c[:, 2], linewidth=1, linestyle=:dash, label="camber")
-    
+    scatter!(ax, center[1], center[2], color=:black, markersize=10, label="centroid")
+
     if legend
         axislegend()
     end
 
     if fname !== nothing
-        CairoMakie.save(fname, f; px_per_unit = px_per_unit)
+        CairoMakie.save(fname, f; px_per_unit=px_per_unit)
     end
     return f
 end
 
-function plot(list_airfoils::Vector{Airfoil}; px_per_unit=2, fname=nothing, legend=true)
+"""
+    plot_airfoils(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, legend=true)
+
+Plot a list of airfoils.
+"""
+function plot(airfoils::Vector{Airfoil}; px_per_unit=2, fname=nothing, legend=true)
 
     width = 0.0
     height = 0.0
-    for af in list_airfoils
-        width_new, height_new = _figure_sizing(af)
+    for airfoil in airfoils
+        width_new, height_new = _figure_sizing(airfoil)
         width = max(width, width_new)
         height = max(height, height_new)
     end
 
-    f = Figure(size=(width, height).*150)
+    f = Figure(size=(width, height) .* 150)
 
     ax = Axis(
-        f[1, 1], 
-        xlabel="x", 
+        f[1, 1],
+        xlabel="x",
         ylabel="y",
-        aspect = DataAspect(),
+        aspect=DataAspect(),
     )
 
-    xlims!(ax, low=minimum(af.x) - 0.01, high=maximum(af.x) + 0.01)
+    xmax = maximum([maximum(af.x) for af in airfoils])
+    xmin = minimum([minimum(af.x) for af in airfoils])
+
+    xlims!(ax, low=xmin - 0.01, high=xmax + 0.01)
 
 
-    for af in list_airfoils
-        lines!(ax, af.x, af.y, linewidth=1, label=af.name)
+    for airfoil in airfoils
+        lines!(ax, airfoil.x, airfoil.y, linewidth=1, label=airfoil.name)
     end
 
     if legend
@@ -161,11 +167,7 @@ function plot(list_airfoils::Vector{Airfoil}; px_per_unit=2, fname=nothing, lege
 
 
     if fname !== nothing
-        CairoMakie.save(fname, f; px_per_unit = px_per_unit)
+        CairoMakie.save(fname, f; px_per_unit=px_per_unit)
     end
     return f
 end
-
-plot(af)
-
-plot([af, af1])
