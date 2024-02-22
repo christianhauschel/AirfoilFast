@@ -3,6 +3,10 @@ using AirfoilFast
 af1 = Airfoil("data/NACA4408.dat")
 af2 = Airfoil("data/NACA4412.dat")
 
+plot(af1, legend=true)
+plot([af1, af2]; legend=true)
+
+
 chordlength(af1)
 camberlength(af1)
 

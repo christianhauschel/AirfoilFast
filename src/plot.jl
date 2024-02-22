@@ -93,47 +93,116 @@ end
 
 
 
-function plot(airfoil::Airfoil; fname=nothing, px_per_unit=2, legend=false)
-    f = Figure(size=_figure_sizing(airfoil) .* 150)
+# function plot(airfoil::Airfoil; fname=nothing, px_per_unit=2, legend=false)
+#     f = Figure(size=_figure_sizing(airfoil) .* 150)
 
-    ax = Axis(
-        f[1, 1],
-        xlabel="x",
-        ylabel="y",
-        title=airfoil.name,
-        subtitle=string(length(airfoil)),
-        aspect=DataAspect(),
-    )
+#     ax = Axis(
+#         f[1, 1],
+#         xlabel="x",
+#         ylabel="y",
+#         title=airfoil.name,
+#         subtitle=string(length(airfoil)),
+#         aspect=DataAspect(),
+#     )
 
-    xlims!(ax, low=minimum(airfoil.x) - 0.01, high=maximum(airfoil.x) + 0.01)
+#     xlims!(ax, low=minimum(airfoil.x) - 0.01, high=maximum(airfoil.x) + 0.01)
 
+#     u = upper(airfoil)
+#     l = lower(airfoil)
+#     c = camberline(airfoil)
+#     center = centroid(airfoil)
+
+#     lines!(ax, u[:, 1], u[:, 2], linewidth=1, linestyle=:solid, label="upper")
+#     lines!(ax, l[:, 1], l[:, 2], linewidth=1, linestyle=:solid, label="lower")
+#     lines!(ax, c[:, 1], c[:, 2], linewidth=1, linestyle=:dash, label="camber")
+#     scatter!(ax, center[1], center[2], color=:black, markersize=10, label="centroid")
+
+#     if legend
+#         axislegend()
+#     end
+
+#     if fname !== nothing
+#         CairoMakie.save(fname, f; px_per_unit=px_per_unit)
+#     end
+#     return f
+# end
+
+# """
+#     plot_airfoils(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, legend=true)
+
+# Plot a list of airfoils.
+# """
+# function plot(airfoils::Vector{Airfoil}; px_per_unit=2, fname=nothing, legend=true)
+
+#     width = 0.0
+#     height = 0.0
+#     for airfoil in airfoils
+#         width_new, height_new = _figure_sizing(airfoil)
+#         width = max(width, width_new)
+#         height = max(height, height_new)
+#     end
+
+#     f = Figure(size=(width, height) .* 150)
+
+#     ax = Axis(
+#         f[1, 1],
+#         xlabel="x",
+#         ylabel="y",
+#         aspect=DataAspect(),
+#     )
+
+#     xmax = maximum([maximum(af.x) for af in airfoils])
+#     xmin = minimum([minimum(af.x) for af in airfoils])
+
+#     xlims!(ax, low=xmin - 0.01, high=xmax + 0.01)
+
+
+#     for airfoil in airfoils
+#         lines!(ax, airfoil.x, airfoil.y, linewidth=1, label=airfoil.name)
+#     end
+
+#     if legend
+#         axislegend()
+#     end
+
+
+#     if fname !== nothing
+#         CairoMakie.save(fname, f; px_per_unit=px_per_unit)
+#     end
+#     return f
+# end
+
+
+function plot(airfoil::Airfoil; fname=nothing, dpi=300, legend=false)
     u = upper(airfoil)
     l = lower(airfoil)
     c = camberline(airfoil)
     center = centroid(airfoil)
 
-    lines!(ax, u[:, 1], u[:, 2], linewidth=1, linestyle=:solid, label="upper")
-    lines!(ax, l[:, 1], l[:, 2], linewidth=1, linestyle=:solid, label="lower")
-    lines!(ax, c[:, 1], c[:, 2], linewidth=1, linestyle=:dash, label="camber")
-    scatter!(ax, center[1], center[2], color=:black, markersize=10, label="centroid")
+    p = Plots.plot(
+        layout=(1, 1),
+        size=_figure_sizing(airfoil) .* 80,
+        dpi=dpi,
+        title=airfoil.name,
+        titlefontsize=10,
+        aspect_ratio=:equal
+    )
 
-    if legend
-        axislegend()
-    end
+    plot!(p, u[:, 1], u[:, 2], linewidth=1, linestyle=:solid, label="upper", legend=legend)
+    plot!(p, l[:, 1], l[:, 2], linewidth=1, linestyle=:solid, label="lower", legend=legend)
+    plot!(p, c[:, 1], c[:, 2], linewidth=1, linestyle=:dash, label="camber", legend=legend)
+    scatter!(p, [center[1]], [center[2]], color=:black, label="centroid", legend=legend, ms=4, marker=:cross)
+
+    xlims!(p, minimum(airfoil.x) - 0.01, maximum(airfoil.x) + 0.01)
 
     if fname !== nothing
-        CairoMakie.save(fname, f; px_per_unit=px_per_unit)
+        savefig(p, fname)
     end
-    return f
+
+    return p
 end
 
-"""
-    plot_airfoils(list_airfoils::Vector{Airfoil}; dpi=300, fname=nothing, legend=true)
-
-Plot a list of airfoils.
-"""
-function plot(airfoils::Vector{Airfoil}; px_per_unit=2, fname=nothing, legend=true)
-
+function plot(airfoils::Vector{Airfoil}; fname=nothing, dpi=300, legend=false)
     width = 0.0
     height = 0.0
     for airfoil in airfoils
@@ -141,33 +210,26 @@ function plot(airfoils::Vector{Airfoil}; px_per_unit=2, fname=nothing, legend=tr
         width = max(width, width_new)
         height = max(height, height_new)
     end
-
-    f = Figure(size=(width, height) .* 150)
-
-    ax = Axis(
-        f[1, 1],
-        xlabel="x",
-        ylabel="y",
-        aspect=DataAspect(),
+    
+    p = Plots.plot(
+        layout=(1, 1),
+        size= (width, height) .* 80,
+        dpi=dpi,
+        titlefontsize=10,
+        aspect_ratio=:equal
     )
+
+    for af in airfoils  
+        plot!(p, af.x, af.y, linewidth=1, linestyle=:solid, label=af.name, legend=legend)
+    end
 
     xmax = maximum([maximum(af.x) for af in airfoils])
     xmin = minimum([minimum(af.x) for af in airfoils])
-
-    xlims!(ax, low=xmin - 0.01, high=xmax + 0.01)
-
-
-    for airfoil in airfoils
-        lines!(ax, airfoil.x, airfoil.y, linewidth=1, label=airfoil.name)
-    end
-
-    if legend
-        axislegend()
-    end
-
+    xlims!(p, xmin - 0.01, xmax + 0.01)
 
     if fname !== nothing
-        CairoMakie.save(fname, f; px_per_unit=px_per_unit)
+        savefig(p, fname)
     end
-    return f
+
+    return p
 end

@@ -3,6 +3,7 @@ module AirfoilFast
 using DelimitedFiles, CSV, DataFrames
 using PyFormattedStrings
 using FLOWMath
+using Plots
 # using CairoMakie
 # using PyPlot, PyCall
 
@@ -17,7 +18,7 @@ export twist, twistd, area, thickness, thickness_max, thickness_TE
 include("io.jl")
 export save, save_dust
 
-# include("plot.jl")
-# export plot
+include("plot.jl")
+export plot
 
 end
