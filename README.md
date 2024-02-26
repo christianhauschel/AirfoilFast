@@ -28,3 +28,7 @@ plot(afs_int)
 <img src="doc/img/plot.png" width=600px></img>
 <img src="doc/img/inter.png" width=600px></img>
 
+
+## License
+
+This code is licensed under Apache 2.0.
